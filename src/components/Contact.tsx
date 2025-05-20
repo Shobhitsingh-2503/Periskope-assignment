@@ -12,7 +12,7 @@ const Contact = () => {
         <div className="font-bold">Name</div>
         <div className="text-[#5a6473]">last message</div>
         <div className="p-1 bg-[#d0dddd] text-[#5a6473] rounded-md text-[8px]">
-          +91-9756081825 + 1
+          +91-9756081825
         </div>
       </div>
     </div>
