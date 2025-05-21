@@ -1,14 +1,45 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import {
-  supabase,
-  type Message,
-  type Conversation,
-  type User,
-} from "@/lib/supabaseClient";
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { supabase } from "@/lib/supabaseClient";
 
-// Create a mapping of conversation IDs to sample messages
+// Define types
+export type Message = {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  sender_name: string;
+  content: string;
+  created_at: string;
+  read: boolean;
+};
+
+export type Conversation = {
+  id: string;
+  name: string;
+  last_message: string;
+  last_message_time: string;
+  participants: string[];
+  unread_count: number;
+  type: string;
+  tags: string[];
+};
+
+export type User = {
+  id: string;
+  name: string;
+  avatar_url: string;
+  phone: string;
+};
+
+// Sample data
 const sampleMessagesByConversation: Record<string, Message[]> = {
   "22222222-2222-2222-2222-222222222222": [
     {
@@ -72,7 +103,6 @@ const sampleMessagesByConversation: Record<string, Message[]> = {
   ],
 };
 
-// Initial conversations data
 const initialConversations: Conversation[] = [
   {
     id: "22222222-2222-2222-2222-222222222222",
@@ -106,14 +136,48 @@ const initialConversations: Conversation[] = [
   },
 ];
 
-export function useChat() {
+// Create context type
+type ChatContextType = {
+  conversations: Conversation[];
+  currentConversation: string | null;
+  currentChat: Conversation | null;
+  messages: Record<string, Message[]>;
+  currentMessages: Message[];
+  users: User[];
+  currentUser: User;
+  loading: boolean;
+  setCurrentConversation: (id: string) => void;
+  sendMessage: (content: string) => Promise<void>;
+};
+
+// Create context with default values
+const ChatContext = createContext<ChatContextType>({
+  conversations: [],
+  currentConversation: null,
+  currentChat: null,
+  messages: {},
+  currentMessages: [],
+  users: [],
+  currentUser: {
+    id: "",
+    name: "",
+    avatar_url: "",
+    phone: "",
+  },
+  loading: true,
+  setCurrentConversation: () => {},
+  sendMessage: async () => {},
+});
+
+// Create provider component
+export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [conversations, setConversations] =
     useState<Conversation[]>(initialConversations);
   const [currentConversation, setCurrentConversation] = useState<string | null>(
     "22222222-2222-2222-2222-222222222222"
   );
   const [currentChat, setCurrentChat] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User>({
@@ -123,7 +187,12 @@ export function useChat() {
     phone: "+91 99718 44008",
   });
 
-  // Update currentChat whenever currentConversation or conversations change
+  // Get current messages for the selected conversation
+  const currentMessages = currentConversation
+    ? messages[currentConversation] || []
+    : [];
+
+  // Update currentChat whenever currentConversation changes
   useEffect(() => {
     const found = conversations.find((conv) => conv.id === currentConversation);
     setCurrentChat(found || null);
@@ -152,38 +221,39 @@ export function useChat() {
     }
   }, []);
 
-  // Fetch messages for the current conversation
-  const fetchMessages = useCallback(async () => {
-    if (!currentConversation) return;
-
+  // Fetch messages for all conversations
+  const fetchAllMessages = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
         .from("messages")
         .select("*")
-        .eq("conversation_id", currentConversation)
         .order("created_at", { ascending: true });
 
       if (error) throw error;
 
       if (data && data.length > 0) {
-        setMessages(data);
+        // Group messages by conversation_id
+        const messagesByConversation: Record<string, Message[]> = {};
+        data.forEach((message) => {
+          if (!messagesByConversation[message.conversation_id]) {
+            messagesByConversation[message.conversation_id] = [];
+          }
+          messagesByConversation[message.conversation_id].push(message);
+        });
+        setMessages(messagesByConversation);
       } else {
         // Use sample messages if no data from Supabase
-        const sampleMessages =
-          sampleMessagesByConversation[currentConversation] || [];
-        setMessages(sampleMessages);
+        setMessages(sampleMessagesByConversation);
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
       // Fallback to sample messages on error
-      const sampleMessages =
-        sampleMessagesByConversation[currentConversation] || [];
-      setMessages(sampleMessages);
+      setMessages(sampleMessagesByConversation);
     } finally {
       setLoading(false);
     }
-  }, [currentConversation]);
+  }, []);
 
   // Fetch users
   const fetchUsers = useCallback(async () => {
@@ -204,7 +274,7 @@ export function useChat() {
   const sendMessage = async (content: string) => {
     if (!content.trim() || !currentConversation) return;
 
-    const newMessage = {
+    const newMessage: Message = {
       id: `msg-${Date.now()}`,
       conversation_id: currentConversation,
       sender_id: currentUser.id,
@@ -216,7 +286,13 @@ export function useChat() {
 
     try {
       // Add message to local state first for immediate UI update
-      setMessages((prev) => [...prev, newMessage]);
+      setMessages((prev) => ({
+        ...prev,
+        [currentConversation]: [
+          ...(prev[currentConversation] || []),
+          newMessage,
+        ],
+      }));
 
       // Update conversation's last message
       setConversations((prev) =>
@@ -262,9 +338,13 @@ export function useChat() {
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          if (newMessage.conversation_id === currentConversation) {
-            setMessages((prev) => [...prev, newMessage]);
-          }
+          setMessages((prev) => ({
+            ...prev,
+            [newMessage.conversation_id]: [
+              ...(prev[newMessage.conversation_id] || []),
+              newMessage,
+            ],
+          }));
         }
       )
       .subscribe();
@@ -288,30 +368,31 @@ export function useChat() {
       supabase.removeChannel(messagesSubscription);
       supabase.removeChannel(conversationsSubscription);
     };
-  }, [currentConversation, fetchConversations]);
+  }, [fetchConversations]);
 
   // Initial data fetch
   useEffect(() => {
     fetchUsers();
     fetchConversations();
-  }, [fetchUsers, fetchConversations]);
+    fetchAllMessages();
+  }, [fetchUsers, fetchConversations, fetchAllMessages]);
 
-  // Fetch messages when current conversation changes
-  useEffect(() => {
-    if (currentConversation) {
-      fetchMessages();
-    }
-  }, [currentConversation, fetchMessages]);
-
-  return {
+  // Context value
+  const value = {
     conversations,
     currentConversation,
     currentChat,
-    setCurrentConversation,
     messages,
+    currentMessages,
     users,
     currentUser,
     loading,
+    setCurrentConversation,
     sendMessage,
   };
-}
+
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+};
+
+// Create custom hook for using the context
+export const useChat = () => useContext(ChatContext);

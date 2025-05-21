@@ -1,4 +1,4 @@
-import type { Message } from "@/lib/supabaseClient";
+import type { Message } from "@/context/ChatContext";
 import { format } from "date-fns";
 import { BiCheckDouble } from "react-icons/bi";
 
@@ -19,7 +19,7 @@ const ChatMessage = ({ message, isCurrentUser }: ChatMessageProps) => {
           {message.sender_name.charAt(0)}
         </div>
       )}
-      <div className="w-[25%]">
+      <div className="w-[30%]">
         <div
           className={`p-3 rounded-lg ${
             isCurrentUser ? "bg-[#E8F5E9] text-black" : "bg-white text-black"
