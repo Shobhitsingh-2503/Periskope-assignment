@@ -106,9 +106,8 @@ const Content = () => {
                 Select a conversation to start chatting.
               </div>
             )}
-            <div ref={messagesEndRef} className="h-10" />
+            <div ref={messagesEndRef} className="h-8" />
           </div>
-
           <div className="absolute bottom-10 w-full bg-[#ffffff] flex flex-row items-center border-none">
             <input
               type="text"

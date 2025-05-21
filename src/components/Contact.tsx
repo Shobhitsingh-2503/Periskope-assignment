@@ -60,6 +60,11 @@ const Contact = () => {
                   {conversation.unread_count}
                 </div>
               )}
+              <div>
+                <div className="w-4 h-4 rounded-full bg-gray-300 flex items-center justify-center text-white mr-3 text-[9px]">
+                  {conversation.name.charAt(0)}
+                </div>
+              </div>
             </div>
             <div className="flex flex-row justify-between items-center ">
               <div className="text-[9px] text-gray-400 bg-gray-200 p-0.5 rounded-md flex flex-row gap-2 items-center">

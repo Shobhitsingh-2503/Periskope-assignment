@@ -21,8 +21,10 @@ const ChatMessage = ({ message, isCurrentUser }: ChatMessageProps) => {
       )}
       <div className="w-[30%]">
         <div
-          className={`p-3 rounded-lg ${
-            isCurrentUser ? "bg-[#E8F5E9] text-black" : "bg-white text-black"
+          className={`p-3 ${
+            isCurrentUser
+              ? "bg-[#E8F5E9] text-black rounded-lg"
+              : "bg-white text-black rounded-tr-lg rounded-bl-lg rounded-br-lg"
           }`}
         >
           <div className="flex flex-row justify-between">

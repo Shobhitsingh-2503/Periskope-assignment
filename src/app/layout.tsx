@@ -7,7 +7,7 @@ import { ChatProvider } from "@/context/ChatContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Supabase Real-time Chat",
+  title: "Periskope Assignment",
   description: "A real-time chat application built with Next.js and Supabase",
 };
 
