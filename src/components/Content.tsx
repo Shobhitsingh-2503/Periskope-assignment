@@ -86,13 +86,12 @@ const Content = () => {
         {/* Messaging area */}
         <div className="relative w-[74%] bg-[url(../images/background.png)] bg-no-repeat bg-cover">
           <ChatHeader />
-
           <div className="p-4 overflow-y-auto h-[calc(100vh-140px)] no-scrollbar">
             {currentConversation ? (
               currentMessages.length > 0 ? (
-                currentMessages.map((message) => (
+                currentMessages.map((message, index) => (
                   <ChatMessage
-                    key={message.id}
+                    key={`${message.id}-${index}`}
                     message={message}
                     isCurrentUser={message.sender_id === currentUser.id}
                   />

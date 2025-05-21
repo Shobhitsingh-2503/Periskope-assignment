@@ -30,7 +30,7 @@ const Contact = () => {
                 {conversation.type && (
                   <div
                     className={`text-xs px-2 py-0.5 rounded-md ${
-                      conversation.type === "Demo"
+                      conversation.type === "demo"
                         ? "bg-[#FFF3E0] text-[#FF9800]"
                         : conversation.type === "Internal"
                         ? "bg-[#E8F5E9] text-[#4CAF50]"
@@ -44,7 +44,7 @@ const Contact = () => {
                   conversation.tags.map((tag, index) => (
                     <div
                       key={index}
-                      className="text-xs px-2 py-0.5 bg-[#ECEFF1] text-[#607D8B] rounded-md"
+                      className={`text-xs px-2 py-0.5 rounded-md bg-[#E3F2FD] text-[#2196F3]`}
                     >
                       {tag}
                     </div>

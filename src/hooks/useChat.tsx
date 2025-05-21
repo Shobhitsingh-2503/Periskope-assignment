@@ -8,110 +8,11 @@ import {
   type User,
 } from "@/lib/supabaseClient";
 
-// Create a mapping of conversation IDs to sample messages
-const sampleMessagesByConversation: Record<string, Message[]> = {
-  "22222222-2222-2222-2222-222222222222": [
-    {
-      id: "sample-1-22222222",
-      conversation_id: "22222222-2222-2222-2222-222222222222",
-      sender_id: "support",
-      sender_name: "Support2",
-      content: "This doesn't go on Tuesday...",
-      created_at: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-      read: true,
-    },
-    {
-      id: "sample-2-22222222",
-      conversation_id: "22222222-2222-2222-2222-222222222222",
-      sender_id: "periskope",
-      sender_name: "Periskope",
-      content: "I understand, we can reschedule.",
-      created_at: new Date(Date.now() - 82800000).toISOString(), // Yesterday, a bit later
-      read: true,
-    },
-  ],
-  "11111111-1111-1111-1111-111111111111": [
-    {
-      id: "sample-1-11111111",
-      conversation_id: "11111111-1111-1111-1111-111111111111",
-      sender_id: "roshnag",
-      sender_name: "Roshnag Airtel",
-      content: "Hello, South Euna!",
-      created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-      read: true,
-    },
-    {
-      id: "sample-2-11111111",
-      conversation_id: "11111111-1111-1111-1111-111111111111",
-      sender_id: "periskope",
-      sender_name: "Periskope",
-      content: "Hello, Livonia!",
-      created_at: new Date(Date.now() - 169200000).toISOString(), // 2 days ago, a bit later
-      read: true,
-    },
-  ],
-  "33333333-3333-3333-3333-333333333333": [
-    {
-      id: "sample-1-33333333",
-      conversation_id: "33333333-3333-3333-3333-333333333333",
-      sender_id: "periskope",
-      sender_name: "Periskope",
-      content: "Test message",
-      created_at: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-      read: true,
-    },
-    {
-      id: "sample-2-33333333",
-      conversation_id: "33333333-3333-3333-3333-333333333333",
-      sender_id: "team",
-      sender_name: "Team Member",
-      content: "Got it, thanks!",
-      created_at: new Date(Date.now() - 255600000).toISOString(), // 3 days ago, a bit later
-      read: true,
-    },
-  ],
-};
-
-// Initial conversations data
-const initialConversations: Conversation[] = [
-  {
-    id: "22222222-2222-2222-2222-222222222222",
-    name: "Test Skope Final 5",
-    last_message: "This doesn't go on Tuesday...",
-    last_message_time: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-    participants: ["Support2"],
-    unread_count: 4,
-    type: "Demo",
-    tags: [],
-  },
-  {
-    id: "11111111-1111-1111-1111-111111111111",
-    name: "Test El Centro",
-    last_message: "Hello, Livonia!",
-    last_message_time: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-    participants: ["Roshnag", "Bharat Kumar"],
-    unread_count: 0,
-    type: "Demo",
-    tags: [],
-  },
-  {
-    id: "33333333-3333-3333-3333-333333333333",
-    name: "Periskope Team Chat",
-    last_message: "Test message",
-    last_message_time: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-    participants: ["Team"],
-    unread_count: 2,
-    type: "Internal",
-    tags: ["internal"],
-  },
-];
-
 export function useChat() {
-  const [conversations, setConversations] =
-    useState<Conversation[]>(initialConversations);
-  const [currentConversation, setCurrentConversation] = useState<string | null>(
-    "22222222-2222-2222-2222-222222222222"
-  );
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversation, setCurrentConversation] = useState<
+    string | null
+  >();
   const [currentChat, setCurrentChat] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -143,12 +44,12 @@ export function useChat() {
         setConversations(data);
       } else {
         // Use initial data if no data from Supabase
-        setConversations(initialConversations);
+        console.log("No Messages to display");
       }
     } catch (error) {
       console.error("Error fetching conversations:", error);
       // Fallback to initial data on error
-      setConversations(initialConversations);
+      console.log("No Messages to display");
     }
   }, []);
 
@@ -170,16 +71,10 @@ export function useChat() {
         setMessages(data);
       } else {
         // Use sample messages if no data from Supabase
-        const sampleMessages =
-          sampleMessagesByConversation[currentConversation] || [];
-        setMessages(sampleMessages);
+        console.error("Error fetching messages:", error);
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
-      // Fallback to sample messages on error
-      const sampleMessages =
-        sampleMessagesByConversation[currentConversation] || [];
-      setMessages(sampleMessages);
     } finally {
       setLoading(false);
     }
@@ -211,7 +106,7 @@ export function useChat() {
       sender_name: currentUser.name,
       content,
       created_at: new Date().toISOString(),
-      read: false,
+      read: true,
     };
 
     try {
