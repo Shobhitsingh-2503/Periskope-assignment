@@ -5,10 +5,11 @@ import { CiSearch } from "react-icons/ci";
 import { IoFilter } from "react-icons/io5";
 import { ImCross } from "react-icons/im";
 import Contact from "./Contact";
+import NewChatButton from "./new-chat-button";
 
 const ContentNav = () => {
   return (
-    <div className="flex flex-col w-[26%] border-r-1 border-[#F1F0E9]">
+    <div className="relative flex flex-col w-[26%] border-r-1 border-[#F1F0E9]">
       <div
         id="content-nav"
         className="flex flex-row items-center justify-between p-2 border-b-1 border-[#F1F0E9]"
@@ -38,6 +39,11 @@ const ContentNav = () => {
       </div>
       <div className="flex flex-col">
         <Contact />
+      </div>
+      <div className="flex flex-row justify-end p-2">
+        <div className="flex flex-row justify-end absolute bottom-5">
+          <NewChatButton />
+        </div>
       </div>
     </div>
   );

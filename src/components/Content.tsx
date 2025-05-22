@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import RightBar from "./RightBar";
 import ChatMessage from "./ChatMessage";
 import ChatHeader from "./ChatHeader";
