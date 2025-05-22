@@ -46,9 +46,7 @@ const Contact = () => {
                     className={`text-xs px-2 py-0.5 rounded-md ${
                       conversation.type === "demo"
                         ? "bg-[#FFF3E0] text-[#FF9800]"
-                        : conversation.type === "Internal"
-                        ? "bg-[#E8F5E9] text-[#4CAF50]"
-                        : "bg-[#E3F2FD] text-[#2196F3]"
+                        : "bg-[#E8F5E9] text-[#4CAF50]"
                     }`}
                   >
                     {conversation.type}
@@ -58,7 +56,7 @@ const Contact = () => {
                   conversation.tags.map((tag, index) => (
                     <div
                       key={index}
-                      className={`text-xs px-2 py-0.5 rounded-md bg-[#E3F2FD] text-[#2196F3]`}
+                      className={`text-xs px-2 py-0.5 rounded-md bg-[#E8F5E9] text-[#4CAF50]`}
                     >
                       {tag}
                     </div>

@@ -18,7 +18,7 @@ const NavBar = () => {
           <BsChatDotsFill /> chats
         </div>
       </div>
-      <div className="flex flex-row w-1/2 items-center justify-evenly">
+      <div className="flex flex-row w-[37%] items-center justify-evenly">
         <div className="flex flex-row items-center gap-2 border-1 border-[#5a6473] rounded-md p-1 text-sm ">
           <TbRefreshDot /> Refresh
         </div>
