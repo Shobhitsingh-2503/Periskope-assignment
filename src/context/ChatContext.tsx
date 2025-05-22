@@ -83,12 +83,19 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState<User>({
+  // const [currentUser, setCurrentUser] = useState<User>({
+  //   id: "periskope",
+  //   name: "Periskope",
+  //   avatar_url: "/images/logo.png",
+  //   phone: "+91 99718 44008",
+  // });
+
+  const currentUser = {
     id: "periskope",
     name: "Periskope",
     avatar_url: "/images/logo.png",
     phone: "+91 99718 44008",
-  });
+  };
 
   // Get current messages for the selected conversation
   const currentMessages = currentConversation

@@ -1,11 +1,21 @@
 "use client";
 
 import { useChat } from "@/context/ChatContext";
-import { isToday, isYesterday, isTomorrow, format } from "date-fns";
+import {
+  isToday,
+  isYesterday,
+  isTomorrow,
+  format,
+  formatDistanceToNow,
+} from "date-fns";
 import { FaPhoneAlt } from "react-icons/fa";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
+
+  if (isToday(date)) {
+    return formatDistanceToNow(date, { addSuffix: true });
+  }
 
   if (isYesterday(date)) {
     return "Yesterday";
