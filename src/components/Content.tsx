@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import RightBar from "./RightBar";
 import { HiMiniFolderArrowDown } from "react-icons/hi2";
 import { CiSearch } from "react-icons/ci";
@@ -42,10 +41,18 @@ const Content = () => {
     }
   };
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentMessages]);
+
+  const formatDateDivider = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="flex flex-row h-screen">
@@ -89,13 +96,32 @@ const Content = () => {
           <div className="p-4 overflow-y-auto h-[calc(100vh-140px)] no-scrollbar">
             {currentConversation ? (
               currentMessages.length > 0 ? (
-                currentMessages.map((message, index) => (
-                  <ChatMessage
-                    key={`${message.id}-${index}`}
-                    message={message}
-                    isCurrentUser={message.sender_id === currentUser.id}
-                  />
-                ))
+                currentMessages.map((message, index) => {
+                  const showDateDivider =
+                    index === 0 ||
+                    new Date(
+                      currentMessages[index].created_at
+                    ).toDateString() !==
+                      new Date(
+                        currentMessages[index - 1].created_at
+                      ).toDateString();
+
+                  return (
+                    <React.Fragment key={`${message.id}-${index}`}>
+                      {showDateDivider && (
+                        <div className="text-center my-4">
+                          <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full">
+                            {formatDateDivider(message.created_at)}
+                          </span>
+                        </div>
+                      )}
+                      <ChatMessage
+                        message={message}
+                        isCurrentUser={message.sender_id === currentUser.id}
+                      />
+                    </React.Fragment>
+                  );
+                })
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-500">
                   No messages in this conversation yet.

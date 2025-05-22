@@ -1,8 +1,22 @@
 "use client";
 
 import { useChat } from "@/context/ChatContext";
-import { formatDistanceToNow } from "date-fns";
+import { isToday, isYesterday, isTomorrow, format } from "date-fns";
 import { FaPhoneAlt } from "react-icons/fa";
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  if (isYesterday(date)) {
+    return "Yesterday";
+  }
+
+  if (isTomorrow(date)) {
+    return "Tomorrow";
+  }
+
+  return format(date, "dd-MM-yyyy");
+};
 
 const Contact = () => {
   const { conversations, currentConversation, setCurrentConversation } =
@@ -71,9 +85,7 @@ const Contact = () => {
                 <FaPhoneAlt /> +91 99718 44008 +1
               </div>
               <div className="text-xs text-gray-500">
-                {formatDistanceToNow(new Date(conversation.last_message_time), {
-                  addSuffix: true,
-                })}
+                {formatDate(conversation.last_message_time)}
               </div>
             </div>
           </div>
